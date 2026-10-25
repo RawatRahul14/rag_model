@@ -11,7 +11,7 @@ from graph import rag_graph
 # === Main UI ===
 def main():
 
-    # === Session State ===
+    ## === Session State ===
     if "session_id" not in st.session_state:
         st.session_state["session_id"] = uuid.uuid4().hex[:8]
 
@@ -27,10 +27,10 @@ def main():
     if "chat_active" not in st.session_state:
         st.session_state["chat_active"] = True
 
-    # === Heading ===
+    ## === Heading ===
     st.header("Agentic RAG Model")
 
-    # === Sidebar ===
+    ## === Sidebar ===
     with st.sidebar:
 
         if not st.session_state["uploaded"]:
@@ -38,8 +38,8 @@ def main():
             with st.form("upload_form"):
                 file = st.file_uploader(
                     "Upload a PDF",
-                    type=["pdf"],
-                    accept_multiple_files=False,
+                    type = ["pdf"],
+                    accept_multiple_files = False,
                 )
 
                 submitted = st.form_submit_button("Submit")
@@ -49,18 +49,18 @@ def main():
                     st.warning("Please upload a PDF first.")
                 else:
                     try:
-                        # === Save File ===
+                        ## === Save File ===
                         file_path = asyncio.run(
                                 save_files(
-                                    session_id=st.session_state["session_id"],
-                                    file_bytes=file.getvalue(),
+                                    session_id = st.session_state["session_id"],
+                                    file_bytes = file.getvalue(),
                                 )
                             )
 
-                        # === Create Retriever ===
-                        retriever = create_retriever(file_path=file_path)
+                        ## === Create Retriever ===
+                        retriever = create_retriever(file_path = file_path)
 
-                        # === Store Results ===
+                        ## === Store Results ===
                         st.session_state["retriever"] = retriever
                         st.session_state["uploaded"] = True
 
@@ -82,7 +82,7 @@ def main():
                 st.session_state["chat_active"] = True
                 st.rerun()
 
-    # === Chat Area ===
+    ## === Chat Area ===
     if not st.session_state["uploaded"]:
         st.info("Upload a PDF to start chatting.")
         return
@@ -91,21 +91,21 @@ def main():
         st.info("Chat ended. Click 'Start new chat' in the sidebar to resume.")
         return
 
-    # === Display Chat History ===
+    ## === Display Chat History ===
     for message in st.session_state["messages"]:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
-    # === Chat Input ===
+    ## === Chat Input ===
     question = st.chat_input("Ask a question about your PDF...")
 
     if question:
-        # === Quit Command ===
+        ## === Quit Command ===
         if question.strip().lower() == "quit":
             st.session_state["chat_active"] = False
             st.rerun()
 
-        # === Display User Message ===
+        ## === Display User Message ===
         st.session_state["messages"].append(
             {"role": "user", "content": question}
         )
@@ -113,7 +113,7 @@ def main():
         with st.chat_message("user"):
             st.markdown(question)
 
-        # === Run Agentic RAG Graph ===
+        ## === Run Agentic RAG Graph ===
         try:
             result = rag_graph.invoke(
                 {
@@ -134,13 +134,13 @@ def main():
 
             answer = result["answer"]
 
-            # === Store Previous Question ===
+            ## === Store Previous Question ===
             st.session_state["previous_question"] = question
 
         except Exception as exc:
             answer = f"Something went wrong: {exc}"
 
-        # === Display and Store Answer ===
+        ## === Display and Store Answer ===
         st.session_state["messages"].append(
             {"role": "assistant", "content": answer}
         )

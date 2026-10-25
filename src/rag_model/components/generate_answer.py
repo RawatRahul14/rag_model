@@ -27,7 +27,7 @@ def generate_answer_node(
             ),
         }
 
-    # === Format Context ===
+    ## === Format Context ===
     context = "\n\n".join(
         (
             f"Source: Page {doc.metadata['page'] + 1}\n"
@@ -38,13 +38,13 @@ def generate_answer_node(
         for doc in documents
     )
 
-    # === Initialize LLM ===
+    ## === Initialize LLM ===
     llm = ChatOpenAI(
         model = "gpt-4o-mini",
         temperature = 0,
     )
 
-    # === Construct Prompt ===
+    ## === Construct Prompt ===
     prompt = f"""
     You are an evidence-grounded document assistant.
 
@@ -64,10 +64,10 @@ def generate_answer_node(
     {question}
     """
 
-    # === Generate Answer ===
+    ## === Generate Answer ===
     response = llm.invoke(prompt)
 
-    # === Update State ===
+    ## === Update State ===
     return {
         **state,
         "answer": response.content,

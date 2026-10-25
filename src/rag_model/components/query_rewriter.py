@@ -12,17 +12,17 @@ def query_rewriter_node(state: AgentState) -> AgentState:
     using the previous question when necessary.
     """
 
-    # === Extract Questions ===
+    ## === Extract Questions ===
     current_question = state.get("question", "")
     previous_question = state.get("previous_question", "")
 
-    # === Initialize LLM ===
+    ## === Initialize LLM ===
     llm_model = ChatOpenAI(
         model = "gpt-4o-mini",
         temperature = 0,
     ).with_structured_output(Rewriter)
 
-    # === Prompt ===
+    ## === Prompt ===
     prompt = f"""
     You are a query-rewriting assistant for a document retrieval system.
 
@@ -42,10 +42,10 @@ def query_rewriter_node(state: AgentState) -> AgentState:
     {previous_question or "None"}
     """
 
-    # === Rewrite Query ===
+    ## === Rewrite Query ===
     response = llm_model.invoke(prompt)
 
-    # === Update State ===
+    ## === Update State ===
     return {
         **state,
         "previous_question": current_question,

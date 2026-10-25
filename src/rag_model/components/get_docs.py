@@ -1,31 +1,29 @@
 # === Modules ===
-from langchain_core.documents import Document
+from langchain_core.runnables import RunnableConfig
 
 from rag_model.components.agent_state import AgentState
 
-# === Document Retriever Node ===
+# === Document Retriever ===
 def doc_retriever(
     state: AgentState,
     *,
-    config,
+    config: RunnableConfig,
 ) -> AgentState:
 
-    # === Get Retriever ===
+    ## === Get the retriever passed through graph configuration. ===
     retriever = config.get("configurable", {}).get("retriever")
 
     if retriever is None:
         raise ValueError("Retriever not provided in graph configuration.")
 
-    # === Get Query ===
+    ## === Prefer the rewritten query for document retrieval. ===
     query = state.get("rewritten_question") or state.get("question", "")
 
     if not query:
         raise ValueError("No query provided for retrieval.")
 
-    # === Retrieve Documents ===
     documents = retriever.invoke(query)
 
-    # === Update State ===
     return {
         **state,
         "documents": documents,

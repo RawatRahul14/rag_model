@@ -15,11 +15,11 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 # === Retriever ===
 def create_retriever(file_path: Path):
-    # === Load PDF ===
+    ## === Load PDF ===
     loader = PyPDFLoader(str(file_path))
     documents = loader.load()
 
-    # === Split Documents ===
+    ## === Split Documents ===
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size = 1000,
         chunk_overlap = 150,
@@ -29,18 +29,18 @@ def create_retriever(file_path: Path):
     if not chunks:
         raise ValueError("The PDF contains no extractable text.")
 
-    # === Create Embeddings ===
+    ## === Create Embeddings ===
     embeddings = OpenAIEmbeddings(
         model = "text-embedding-3-small"
     )
 
-    # === Create Vector Store ===
+    ## === Create Vector Store ===
     vector_store = FAISS.from_documents(
         documents = chunks,
         embedding = embeddings,
     )
 
-    # === Return Retriever ===
+    ## === Return Retriever ===
     return vector_store.as_retriever(
         search_kwargs = {"k": 4}
     )
